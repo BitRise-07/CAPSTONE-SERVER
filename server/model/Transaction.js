@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 const transactionSchema = new mongoose.Schema({
   sender: {
     type: mongoose.Schema.Types.ObjectId,
@@ -22,8 +24,13 @@ const transactionSchema = new mongoose.Schema({
     default: "Success",
   },
 
-  fraudScore: {
-    type: Number,
+  deviceId: { type: mongoose.Schema.Types.ObjectId, ref: "Device" },
+
+  ipAddress: String,
+
+  location: {
+    lat: Number,
+    lon: Number
   },
 
   createdAt: {

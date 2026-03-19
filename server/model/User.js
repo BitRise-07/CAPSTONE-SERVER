@@ -16,34 +16,37 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  accountType :{
+        type: String,
+        enum: ["Admin", "User",],
+        required: true,
+        default:"User"
+
+    },
 
   phone: {
     type: String,
   },
+  accountNumber: {
+  type: String,
+  unique: true
+},
 
   balance: {
     type: Number,
     default: 10000,
   },
+  isBlocked: {
+  type: Boolean,
+  default: false
+},
 
-  lastLocation: {
-    city: String,
-    lat: Number,
-    lon: Number,
-  },
-
-  lastDevice: {
-    type: String,
-  },
-
-  lastTransactionTime: {
-    type: Date,
-  },
 
   createdAt: {
     type: Date,
     default: Date.now,
   },
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);
+ 
