@@ -10,15 +10,14 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const fileUpload = require("express-fileupload");
+const userRoutes = require("./routes/User");
+const profileRoutes = require("./routes/Profile")
 
-// 🔥 Load env
 dotenv.config();
 const PORT = process.env.PORT || 4000;
 
-// 🔥 Create HTTP server (IMPORTANT for socket)
 const server = http.createServer(app);
 
-// 🔥 Initialize Socket.io
 const io = new Server(server, {
   cors: {
     origin: ["http://localhost:5173"],
@@ -26,14 +25,12 @@ const io = new Server(server, {
   },
 });
 
-// 🔥 Store online users
 const onlineUsers = new Map();
 
-// ================= SOCKET CONNECTION =================
+
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
-  // register user
   socket.on("register", (userId) => {
     onlineUsers.set(userId, socket.id);
     console.log("User registered:", userId);
@@ -49,10 +46,8 @@ io.on("connection", (socket) => {
   });
 });
 
-// ================= DATABASE =================
 database.connect();
 
-// ================= MIDDLEWARE =================
 app.use(express.json());
 app.use(cookieParser());
 
@@ -70,31 +65,22 @@ app.use(
   })
 );
 
-// ================= CLOUDINARY =================
 cloudinaryConnect();
 
-// ================= ROUTES =================
 
-// 👉 import your routes
-const userRoutes = require("./routes/user");
-const transactionRoutes = require("./routes/transaction");
 
-// 👉 use routes
 app.use("/api/v1/auth", userRoutes);
-app.use("/api/v1/transaction", transactionRoutes);
+app.use("/api/v1/profile", profileRoutes);
 
-// ================= TEST ROUTE =================
 app.get("/", (req, res) => {
   return res.json({
     success: true,
-    message: "Server is running 🚀",
+    message: "Server is running ",
   });
 });
 
-// ================= START SERVER =================
 server.listen(PORT, () => {
   console.log(`Server running at port ${PORT}`);
 });
 
-// 🔥 EXPORT for controllers
 module.exports = { io, onlineUsers };

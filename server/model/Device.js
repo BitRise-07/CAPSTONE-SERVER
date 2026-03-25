@@ -4,7 +4,7 @@ const deviceSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 
   deviceId: String,
-  deviceType: String, // mobile / desktop
+  deviceType: String, 
   browser: String,
   os: String,
 
