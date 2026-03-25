@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-  name: {
+  firstName: {
+    type: String,
+    required: true,
+  },
+  lastName: {
     type: String,
     required: true,
   },
@@ -32,6 +36,10 @@ const userSchema = new mongoose.Schema({
   unique: true
 },
 
+image:{
+  type: String,
+},
+
   balance: {
     type: Number,
     default: 10000,
@@ -41,11 +49,15 @@ const userSchema = new mongoose.Schema({
   default: false
 },
 
+resetPasswordToken:{
+  type: String, 
+},
+resetPasswordExpiresIn:{
+  type: Date,
+},
 
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+  // raushan - yha se CreatedAt field automatically add ho jayega har user ke liye jab wo create hoga, aur updatedAt field bhi automatically update hota rahega jab bhi user document update hoga. so mai ye field hata deta hu
+  
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);
