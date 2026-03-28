@@ -1,12 +1,15 @@
 const User = require("../model/User");
 const Profile = require("../model/Profile");
-const {getUserFullDetails} = require("../utils/getUserDetails");
+const getUserFullDetails = require("../utils/getUserDetails");
 
 
 const updateProfile = async (req, res) => {
   try {
     const userId = req.user.id;
     const { dob, gender, address } = req.body;
+
+
+
 
     if (!address?.city) {
       return res.status(400).json({
@@ -34,6 +37,9 @@ const updateProfile = async (req, res) => {
     });
 
     const fullData = await getUserFullDetails(userId);
+    console.log("user data: ", fullData);
+        console.log("user id: ", userId);
+    console.log("User detail: ", dob, gender, address)
 
     return res.status(200).json({
       success: true,
@@ -45,6 +51,7 @@ const updateProfile = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
+      nessage:"profile not updated"
     });
   }
 };

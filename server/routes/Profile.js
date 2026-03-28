@@ -8,12 +8,12 @@ const {
 
 
 // Update profile
-router.put("/updateprofile", auth, updateProfile);
+router.post("/updateprofile", auth, updateProfile);
 
 // Get current logged-in user profile
 router.get("/me", auth, getProfile);
 
 
-router.get("/editprofile", auth, editProfile);
+router.post("/editprofile", auth, editProfile);
 
 module.exports = router;

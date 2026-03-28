@@ -5,6 +5,7 @@ const { configDotenv } = require("dotenv");
 const User = require("../model/User.js");
 const Otp = require("../model/Otp.js");
 const mailSender = require("../utils/mailSender.js");
+const getUserFullDetails = require("../utils/getUserDetails.js");
 
 configDotenv();
 
@@ -42,30 +43,21 @@ const sendOTP = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "OTP sent successfully",
-      otp
+      otp,
     });
-
   } catch (error) {
     console.log("SEND OTP ERROR:", error);
 
     return res.status(500).json({
       success: false,
       message: "OTP failed",
-
     });
   }
 };
 
 const signup = async (req, res) => {
-  const {
-    firstName,
-    lastName,
-    email,
-    password,
-    confirmPassword,
-    phone,
-    otp,
-  } = req.body;
+  const { firstName, lastName, email, password, confirmPassword, phone, otp } =
+    req.body;
 
   try {
     if (
@@ -122,6 +114,7 @@ const signup = async (req, res) => {
       password: hashedPassword,
       phone,
       accountNumber,
+      image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`,
     });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -176,11 +169,13 @@ const login = async (req, res) => {
       success: true,
       token,
       redirectTo: user.profileCompleted ? "dashboard" : "update-profile",
-      data: fullData, // 🔥 full dashboard data
+      data: fullData,
     });
-
-  } catch {
-    return res.status(500).json({ success: false });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
 };
 
@@ -221,7 +216,6 @@ const changePassword = async (req, res) => {
       });
     }
 
-    // 5. Prevent same password reuse
     const isSame = await bcrypt.compare(newPassword, user.password);
     if (isSame) {
       return res.status(400).json({
@@ -241,7 +235,6 @@ const changePassword = async (req, res) => {
       success: true,
       message: "Password changed successfully. Please login again.",
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
