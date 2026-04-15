@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
       default: "User",
     },
 
-    phone: String,
+    contactNo: String,
 
     accountNumber: {
       type: String,
@@ -27,6 +27,12 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    transactions: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Transaction",
+      },
+    ],
 
     image: String,
 
@@ -43,7 +49,7 @@ const userSchema = new mongoose.Schema(
     resetPasswordToken: String,
     resetPasswordExpiresIn: Date,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("User", userSchema);

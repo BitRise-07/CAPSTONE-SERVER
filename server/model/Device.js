@@ -1,18 +1,16 @@
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 
-const deviceSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+// const deviceSchema = new mongoose.Schema({
+//   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 
-  deviceId: String,
-  deviceType: String, 
-  browser: String,
-  os: String,
+//   deviceId: [],
+//   ipAddress: String,
 
-  ipAddress: String,
+//   usageCount: { type: Number, default: 1 }, 
+//   isTrusted: { type: Boolean, default: false },
 
-  isTrusted: { type: Boolean, default: false },
-  lastUsedAt: Date
+//   lastUsedAt: Date
 
-}, { timestamps: true });
+// }, { timestamps: true });
 
-module.exports = mongoose.model("Device", deviceSchema);
+// module.exports = mongoose.model("Device", deviceSchema);

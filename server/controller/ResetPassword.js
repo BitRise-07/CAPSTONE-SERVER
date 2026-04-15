@@ -2,7 +2,6 @@ const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const User = require("../model/User");
 
-// This will send a reset password token to the user
 const resetPasswordToken = async (req, res) => {
   const { email } = req.body;
 
@@ -29,7 +28,7 @@ const resetPasswordToken = async (req, res) => {
       { email },
       {
         resetPasswordToken: token,
-        resetPasswordExpiresIn: Date.now() + 5 * 60 * 1000, // 5 min
+        resetPasswordExpiresIn: Date.now() + 5 * 60 * 1000, 
       },
     );
 
@@ -114,5 +113,3 @@ const resetPassword = async (req, res) => {
 };
 
 module.exports = { resetPasswordToken, resetPassword };
-
-// Devloped by HR-RAHMAN 😉

@@ -56,7 +56,7 @@ const sendOTP = async (req, res) => {
 };
 
 const signup = async (req, res) => {
-  const { firstName, lastName, email, password, confirmPassword, phone, otp } =
+  const { firstName, lastName, email, password, confirmPassword, contactNo, otp } =
     req.body;
 
   try {
@@ -112,7 +112,7 @@ const signup = async (req, res) => {
       lastName,
       email,
       password: hashedPassword,
-      phone,
+      contactNo,
       accountNumber,
       image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`,
     });
@@ -162,7 +162,6 @@ const login = async (req, res) => {
 
     res.cookie("token", token, { httpOnly: true });
 
-    // ✅ GET FULL DATA
     const fullData = await getUserFullDetails(user._id);
 
     return res.status(200).json({
@@ -245,4 +244,3 @@ const changePassword = async (req, res) => {
 
 module.exports = { login, sendOTP, signup, changePassword };
 
-// Devloped by HR-RAHMAN 😉

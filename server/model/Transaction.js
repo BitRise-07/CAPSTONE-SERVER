@@ -24,7 +24,11 @@ const transactionSchema = new mongoose.Schema({
     default: "Success",
   },
 
-  deviceId: { type: mongoose.Schema.Types.ObjectId, ref: "Device" },
+  deviceId: {
+     type: String,
+     required: true, 
+
+  },
 
   ipAddress: String,
 
@@ -33,10 +37,7 @@ const transactionSchema = new mongoose.Schema({
     lon: Number
   },
 
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  
+}, { timestamps: true });
 
 module.exports = mongoose.model("Transaction", transactionSchema);

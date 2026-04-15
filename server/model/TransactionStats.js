@@ -3,16 +3,44 @@ const mongoose = require("mongoose");
 const transactionStatsSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 
-  avgAmount: Number,
-  maxAmount: Number,
+  avgAmount: {
+    type: Number,
+    default: 0
+  },
+  maxAmount: {
+    type: Number,
+    default: 0
+  },
 
-  txnCountLast1Hr: Number,
-  txnCountLast24Hr: Number,
+  lastDeviceId: String,
+
+  txnCountLast10M: {
+    type: Number,
+    default: 0
+  },
+  txnCountLast1H: {
+    type: Number,
+    default: 0
+  },
+
+  txnWindow10MStart: {
+    type: Date,
+    default: null
+  },
+  txnWindow1HStart: {
+    type: Date,
+    default: null
+  },
 
   lastTransactionAt: Date,
   lastTransactionLocation: {
     lat: Number,
     lon: Number
+  },
+
+  lastTransactionAmount: {
+    type: Number,
+    default: 0
   }
 
 }, { timestamps: true });

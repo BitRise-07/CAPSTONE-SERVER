@@ -64,7 +64,7 @@ const editProfile = async (req, res) => {
     const {
       firstName,
       lastName,
-      phone,
+      contactNo,
       image,
       dob,
       gender,
@@ -79,7 +79,7 @@ const editProfile = async (req, res) => {
     // USER UPDATE
     if (firstName) user.firstName = firstName;
     if (lastName) user.lastName = lastName;
-    if (phone) user.phone = phone;
+    if (contactNo) user.contactNo = contactNo;
     if (image) user.image = image;
 
     // PROFILE UPDATE
@@ -93,15 +93,8 @@ const editProfile = async (req, res) => {
 
     await profile.save();
 
-    // IFSC update
-    if (address?.city && address.city !== oldCity) {
-      const bankCode = "VDBW";
-      const cityCode = address.city.substring(0, 3).toUpperCase();
-      user.ifscCode = `${bankCode}0${cityCode}001`;
-    }
-
-    user.profileCompleted = true;
-    await user.save();
+    
+    
 
     // ✅ SEND FULL DATA
     const fullData = await getUserFullDetails(userId);
