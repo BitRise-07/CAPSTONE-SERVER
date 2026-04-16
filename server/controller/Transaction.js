@@ -3,7 +3,6 @@ const Transaction = require("../model/Transaction");
 const User = require("../model/User");
 const Notification = require("../model/Notification");
 const TransactionStats = require("../model/TransactionStats");
-const { io, onlineUsers } = require("../server");
 const crypto = require("crypto");
 
 exports.createTransaction = async (req, res) => {
@@ -19,7 +18,7 @@ exports.createTransaction = async (req, res) => {
     }
 
     const sender = await User.findById(senderId);
-    const receiver = await User.findById(receiverId);
+    const receiver = await User.findOne({ accountNumber: receiverId });
 
     if (!receiver) throw new Error("Receiver not found");
 
@@ -46,7 +45,7 @@ exports.createTransaction = async (req, res) => {
         receiver: receiverId,
         amount,
         status,
-        deviceId: device._id,
+        deviceId: deviceId,
         ipAddress: req.ip,
         location: { lat, lon },
       },

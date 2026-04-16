@@ -8,9 +8,10 @@ const {
     getAllTransactions
 } = require("../controller/Transaction");
 
-const {newUser} = require("../middlewares/newUser");
+
 const {detectFraud} = require("../middlewares/detectFraud");
 const {verifyTransaction} = require("../middlewares/verifyTransaction");
+const { newUser } = require("../middlewares/newUser");
 
 router.post("/create-transaction", auth, isUser,newUser, detectFraud, createTransaction);
 router.post("/verify-and-create-transaction", auth, isUser, verifyTransaction);

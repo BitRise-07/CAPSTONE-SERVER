@@ -1,0 +1,80 @@
+Date : 2026-04-15 23:43:06
+Directory : e:\CAPSTONE
+Total : 42 files,  23451 codes, 53 comments, 398 blanks, all 23902 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| CSV        |          1 |     20,001 |          0 |          1 |     20,002 |
+| JSON       |          2 |      2,022 |          0 |          2 |      2,024 |
+| JavaScript |         36 |      1,348 |         43 |        370 |      1,761 |
+| Python     |          3 |         80 |         10 |         25 |        115 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                           | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                              |         42 |     23,451 |         53 |        398 |     23,902 |
+| ml-service                                                     |          4 |     20,081 |         10 |         26 |     20,117 |
+| server                                                         |         38 |      3,370 |         43 |        372 |      3,785 |
+| server (Files)                                                 |          3 |      2,089 |          0 |         23 |      2,112 |
+| server\config                                                  |          2 |         27 |          0 |          3 |         30 |
+| server\controller                                              |          4 |        614 |         10 |        157 |        781 |
+| server\middlewares                                             |          4 |        188 |          2 |         40 |        230 |
+| server\model                                                   |          9 |        195 |         24 |         63 |        282 |
+| server\routes                                                  |          3 |         38 |          2 |         17 |         57 |
+| server\utils                                                   |         13 |        219 |          5 |         69 |        293 |
+| server\utils (Files)                                           |          6 |         87 |          0 |         23 |        110 |
+| server\utils\riskScore                                         |          7 |        132 |          5 |         46 |        183 |
++----------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                       | language   | code       | comment    | blank      | total      |
++----------------------------------------------------------------+------------+------------+------------+------------+------------+
+| e:\CAPSTONE\ml-service\app.py                                  | Python     |         32 |          3 |          9 |         44 |
+| e:\CAPSTONE\ml-service\fraud_data.csv                          | CSV        |     20,001 |          0 |          1 |     20,002 |
+| e:\CAPSTONE\ml-service\generate_data.py                        | Python     |         29 |          1 |          8 |         38 |
+| e:\CAPSTONE\ml-service\train.py                                | Python     |         19 |          6 |          8 |         33 |
+| e:\CAPSTONE\server\config\cloudinary.js                        | JavaScript |         15 |          0 |          2 |         17 |
+| e:\CAPSTONE\server\config\databse.js                           | JavaScript |         12 |          0 |          1 |         13 |
+| e:\CAPSTONE\server\controller\Auth.js                          | JavaScript |        200 |          0 |         47 |        247 |
+| e:\CAPSTONE\server\controller\ResetPassword.js                 | JavaScript |         92 |          3 |         21 |        116 |
+| e:\CAPSTONE\server\controller\Transaction.js                   | JavaScript |        227 |          1 |         58 |        286 |
+| e:\CAPSTONE\server\controller\UpdateProfile.js                 | JavaScript |         95 |          6 |         31 |        132 |
+| e:\CAPSTONE\server\index.js                                    | JavaScript |         67 |          0 |         21 |         88 |
+| e:\CAPSTONE\server\middlewares\auth.js                         | JavaScript |         80 |          0 |         11 |         91 |
+| e:\CAPSTONE\server\middlewares\detectFraud.js                  | JavaScript |         64 |          2 |         18 |         84 |
+| e:\CAPSTONE\server\middlewares\newUser.js                      | JavaScript |         24 |          0 |          9 |         33 |
+| e:\CAPSTONE\server\middlewares\verifyTransaction.js            | JavaScript |         20 |          0 |          2 |         22 |
+| e:\CAPSTONE\server\model\Beneficiary.js                        | JavaScript |         10 |          0 |          5 |         15 |
+| e:\CAPSTONE\server\model\Device.js                             | JavaScript |          0 |         10 |          6 |         16 |
+| e:\CAPSTONE\server\model\Notification.js                       | JavaScript |         17 |          0 |          5 |         22 |
+| e:\CAPSTONE\server\model\Otp.js                                | JavaScript |         18 |         14 |          4 |         36 |
+| e:\CAPSTONE\server\model\Profile.js                            | JavaScript |         21 |          0 |          4 |         25 |
+| e:\CAPSTONE\server\model\Sesson.js                             | JavaScript |         15 |          0 |          6 |         21 |
+| e:\CAPSTONE\server\model\Transaction.js                        | JavaScript |         32 |          0 |         11 |         43 |
+| e:\CAPSTONE\server\model\TransactionStats.js                   | JavaScript |         39 |          0 |          9 |         48 |
+| e:\CAPSTONE\server\model\User.js                               | JavaScript |         43 |          0 |         13 |         56 |
+| e:\CAPSTONE\server\package-lock.json                           | JSON       |      1,994 |          0 |          1 |      1,995 |
+| e:\CAPSTONE\server\package.json                                | JSON       |         28 |          0 |          1 |         29 |
+| e:\CAPSTONE\server\routes\Profile.js                           | JavaScript |         10 |          2 |          8 |         20 |
+| e:\CAPSTONE\server\routes\Transaction.js                       | JavaScript |         16 |          0 |          4 |         20 |
+| e:\CAPSTONE\server\routes\User.js                              | JavaScript |         12 |          0 |          5 |         17 |
+| e:\CAPSTONE\server\utils\calculateTimeDiff.js                  | JavaScript |          6 |          0 |          2 |          8 |
+| e:\CAPSTONE\server\utils\generateIFSC.js                       | JavaScript |          5 |          0 |          0 |          5 |
+| e:\CAPSTONE\server\utils\getDistanceKm.js                      | JavaScript |         13 |          0 |          5 |         18 |
+| e:\CAPSTONE\server\utils\getUserDetails.js                     | JavaScript |         13 |          0 |          5 |         18 |
+| e:\CAPSTONE\server\utils\imageUploader.js                      | JavaScript |         22 |          0 |          5 |         27 |
+| e:\CAPSTONE\server\utils\mailSender.js                         | JavaScript |         28 |          0 |          6 |         34 |
+| e:\CAPSTONE\server\utils\riskScore\amountRiskScore.js          | JavaScript |          9 |          0 |          4 |         13 |
+| e:\CAPSTONE\server\utils\riskScore\deviceRiskScore.js          | JavaScript |          8 |          0 |          3 |         11 |
+| e:\CAPSTONE\server\utils\riskScore\finalRiskScore.js           | JavaScript |         26 |          1 |          4 |         31 |
+| e:\CAPSTONE\server\utils\riskScore\frequentTransactionScore.js | JavaScript |         19 |          2 |          8 |         29 |
+| e:\CAPSTONE\server\utils\riskScore\isFraud.js                  | JavaScript |          6 |          0 |          2 |          8 |
+| e:\CAPSTONE\server\utils\riskScore\locationRiskScore.js        | JavaScript |         41 |          1 |         13 |         55 |
+| e:\CAPSTONE\server\utils\riskScore\velocityRiskScore.js        | JavaScript |         23 |          1 |         12 |         36 |
+| Total                                                          |            |     23,451 |         53 |        398 |     23,902 |
++----------------------------------------------------------------+------------+------------+------------+------------+------------+

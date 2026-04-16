@@ -1,8 +1,9 @@
-import {deviceRiskScore} from "./deviceRiskScore.js";
-import {amountRiskScore} from "./amountRiskScore.js";
-import {velocityRiskScore} from "./velocityRiskScore.js";
-import {locationRiskScore} from "./locationRiskScore.js";
-import {frequentTransactionScore} from "./frequentTransactionScore.js";
+
+const deviceRiskScore = require("./deviceRiskScore.js");
+const amountRiskScore = require("./amountRiskScore.js");
+const velocityRiskScore = require("./velocityRiskScore.js");
+const locationRiskScore = require("./locationRiskScore.js");
+const frequentTransactionScore = require("./frequentTransactionScore.js");
 
 function finalRiskScore({
   amount,

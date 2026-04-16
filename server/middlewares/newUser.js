@@ -1,7 +1,7 @@
-const User = require("../models/User");
+const User = require("../model/User");
 const Transaction = require("../model/Transaction")
 
-const newUser = async (req, res, next) => {
+exports.newUser = async (req, res, next) => {
   try {
     const userId = req.user.id;
 
@@ -30,4 +30,4 @@ const newUser = async (req, res, next) => {
   }
 };
 
-module.exports = newUser;
+// module.exports = newUser;

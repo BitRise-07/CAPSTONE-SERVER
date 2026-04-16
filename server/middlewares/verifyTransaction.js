@@ -1,6 +1,6 @@
 const Otp = require("../model/Otp");
 
-const verifyTransaction = async (req, res, next) => {
+exports.verifyTransaction = async (req, res, next) => {
   try {
     const { otp } = req.body;
     if (!otp) {
@@ -19,4 +19,3 @@ const verifyTransaction = async (req, res, next) => {
   }
 };
 
-module.exports = verifyTransaction;

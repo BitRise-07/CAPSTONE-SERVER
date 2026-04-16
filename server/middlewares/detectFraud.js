@@ -1,12 +1,12 @@
 require("dotenv").config();
-const TransactionStats = require("../models/TransactionStats");
+const TransactionStats = require("../model/TransactionStats");
 const { finalRiskScore } = require("../utils/riskScore/finalRiskScore.js");
 const { isFraud } = require("../utils/riskScore/isFraud.js");
 const crypto = require("crypto");
-const Otp = require("../models/Otp.js");
+const Otp = require("../model/Otp.js");
 const mailSender = require("../utils/mailSender.js");
 
-const detectFraud = async (req, res, next) => {
+exports.detectFraud = async (req, res, next) => {
   try {
     const { amount, deviceId, location } = req.body;
     const userId = req.user.id;
@@ -80,4 +80,3 @@ const detectFraud = async (req, res, next) => {
   }
 };
 
-module.exports = fraudMiddleware;
