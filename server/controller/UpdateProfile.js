@@ -25,16 +25,6 @@ const updateProfile = async (req, res) => {
       { upsert: true, new: true }
     );
 
-    // GENERATE IFSC
-    const bankCode = "VDBW";
-    const cityCode = address.city.substring(0, 3).toUpperCase();
-    const ifscCode = `${bankCode}0${cityCode}001`;
-
-    // UPDATE USER
-    await User.findByIdAndUpdate(userId, {
-      ifscCode,
-      profileCompleted: true,
-    });
 
     const fullData = await getUserFullDetails(userId);
     console.log("user data: ", fullData);
@@ -64,7 +54,6 @@ const editProfile = async (req, res) => {
     const {
       firstName,
       lastName,
-      contactNo,
       image,
       dob,
       gender,
@@ -79,7 +68,6 @@ const editProfile = async (req, res) => {
     // USER UPDATE
     if (firstName) user.firstName = firstName;
     if (lastName) user.lastName = lastName;
-    if (contactNo) user.contactNo = contactNo;
     if (image) user.image = image;
 
     // PROFILE UPDATE
@@ -96,7 +84,6 @@ const editProfile = async (req, res) => {
     
     
 
-    // ✅ SEND FULL DATA
     const fullData = await getUserFullDetails(userId);
 
     return res.status(200).json({

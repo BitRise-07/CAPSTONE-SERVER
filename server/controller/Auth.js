@@ -56,7 +56,7 @@ const sendOTP = async (req, res) => {
 };
 
 const signup = async (req, res) => {
-  const { firstName, lastName, email, password, confirmPassword, contactNo, otp } =
+  const { firstName, lastName, email, password, confirmPassword, otp } =
     req.body;
 
   try {
@@ -102,18 +102,13 @@ const signup = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const accountNumber =
-      "10" +
-      Date.now().toString().slice(-6) +
-      Math.floor(100000 + Math.random() * 900000);
+    
 
     const user = await User.create({
       firstName,
       lastName,
       email,
       password: hashedPassword,
-      contactNo,
-      accountNumber,
       image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`,
     });
 
@@ -167,7 +162,6 @@ const login = async (req, res) => {
     return res.status(200).json({
       success: true,
       token,
-      redirectTo: user.profileCompleted ? "dashboard" : "update-profile",
       data: fullData,
     });
   } catch (err) {

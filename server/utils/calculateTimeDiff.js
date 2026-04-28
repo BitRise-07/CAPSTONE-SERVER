@@ -5,4 +5,4 @@ function timeDiff(lastTime, currentTime) {
   return diffMs / (1000 * 60);
 }
 
-module.exports = timeDiff;
+module.exports = timeDiff;``

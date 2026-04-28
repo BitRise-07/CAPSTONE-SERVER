@@ -14,19 +14,22 @@ const userSchema = new mongoose.Schema(
       default: "User",
     },
 
-    contactNo: String,
+    // 🔥 BEHAVIOR PROFILE (VERY IMPORTANT)
+    behavior: {
+      avgAmount: { type: Number, default: 0 },
+      stdAmount: { type: Number, default: 0 },
+      maxAmount: { type: Number, default: 0 },
 
-    accountNumber: {
-      type: String,
-      unique: true,
+      transactionCount: { type: Number, default: 0 },
+
+      commonDevices: { type: [String], default: [] },
+      commonLocations: { type: [String], default: [] },
+
+      lastTransactionAt: Date,
+      lastLatitude: Number,
+      lastLongitude: Number
     },
 
-    ifscCode: String,
-
-    profileCompleted: {
-      type: Boolean,
-      default: false,
-    },
     transactions: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -36,20 +39,10 @@ const userSchema = new mongoose.Schema(
 
     image: String,
 
-    balance: {
-      type: Number,
-      default: 10000,
-    },
-
-    isBlocked: {
-      type: Boolean,
-      default: false,
-    },
-
     resetPasswordToken: String,
     resetPasswordExpiresIn: Date,
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("User", userSchema);

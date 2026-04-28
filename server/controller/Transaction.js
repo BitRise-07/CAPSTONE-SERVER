@@ -1,121 +1,62 @@
 const mongoose = require("mongoose");
 const Transaction = require("../model/Transaction");
-const User = require("../model/User");
-const Notification = require("../model/Notification");
-const TransactionStats = require("../model/TransactionStats");
 const crypto = require("crypto");
 
-exports.createTransaction = async (req, res) => {
+import { buildFeatures, updateBehaviorProfile } from "../services/featureService.js";
+import { evaluateRisk } from "../services/riskService.js";
+
+export async function addTransaction(req, res) {
   try {
-    const senderId = req.user._id;
+    const payload = req.body;
 
-    const status = req.user.status || "Success";
-
-    const { receiverId, amount, lat, lon, deviceId, ipAddress } = req.body;
-
-    if (!receiverId || !amount) {
-      throw new Error("Receiver and amount required");
-    }
-
-    const sender = await User.findById(senderId);
-    const receiver = await User.findOne({ accountNumber: receiverId });
-
-    if (!receiver) throw new Error("Receiver not found");
-
-    let stats = await TransactionStats.findOne({ userId: senderId });
-
-    if (!stats) {
-      const newStats = await TransactionStats.create([{ userId: senderId }], {
-        session,
-      });
-      stats = newStats[0];
-    }
-
-    if (status === "Success") {
-      sender.balance -= amount;
-      receiver.balance += amount;
-
-      await sender.save({ session });
-      await receiver.save({ session });
-    }
-
-    const transaction = await Transaction.create([
-      {
-        sender: senderId,
-        receiver: receiverId,
-        amount,
-        status,
-        deviceId: deviceId,
-        ipAddress: req.ip,
-        location: { lat, lon },
-      },
-    ]);
-    const txn = transaction[0];
-    await User.findByIdAndUpdate(senderId, {
-      $push: { transactions: txn._id },
-    });
-
-    if (status === "Success") {
-      await User.findByIdAndUpdate(receiverId, {
-        $push: { transactions: txn._id },
+    if (!payload.amount || !payload.deviceId || !payload.location?.city) {
+      return res.status(400).json({
+        message: "amount, deviceId, and location are required"
       });
     }
 
-    const now = new Date();
+    // ✅ STEP 1: Build features
+    const features = await buildFeatures(req.user, payload);
 
-    if (
-      !stats.txnWindow10MStart ||
-      now - stats.txnWindow10MStart > 10 * 60 * 1000
-    ) {
-      stats.txnCountLast10M = 0;
-      stats.txnWindow10MStart = now;
-    }
-
-    stats.txnCountLast10M += 1;
-
-    if (
-      !stats.txnWindow1HStart ||
-      now - stats.txnWindow1HStart > 60 * 60 * 1000
-    ) {
-      stats.txnCountLast1H = 0;
-      stats.txnWindow1HStart = now;
-    }
-
-    stats.txnCountLast1H += 1;
-
-    stats.avgAmount =
-      ((stats.avgAmount || 0) * txnCount + amount) / (txnCount + 1);
-
-    stats.maxAmount = Math.max(stats.maxAmount || 0, amount);
-    stats.lastTransactionAt = new Date();
-    stats.lastTransactionLocation = { lat, lon };
-    stats.lastTransactionAmount = amount;
-
-
-    if(stats.lastDeviceId !== deviceId) {
-      newDevice = crypto.randomBytes(16).toString("hex");
-      stats.lastDeviceId = deviceId;
-    }
-
-    await stats.save();
-//  Notify receiver if online
-    
-
-    return res.status(200).json({
-      success: true,
-      deviceId: stats.lastDeviceId,
-      status,
-      transaction: transaction[0],
+    // ✅ STEP 2: Risk evaluation
+    const risk = await evaluateRisk({
+      user: req.user,
+      features,
+      transactionContext: payload
     });
+
+    // ✅ STEP 3: Save transaction
+    const transaction = await Transaction.create({
+      user: req.user._id,
+      amount: payload.amount,
+      merchant: payload.merchant,
+      category: payload.category,
+      channel: payload.channel,
+      accountId: payload.accountId,
+      deviceId: payload.deviceId,
+      location: payload.location,
+      features,
+      scores: risk.scores,
+      adaptivePolicy: risk.adaptivePolicy,
+      decision: risk.decision,
+      status: risk.status,
+      explanation: risk.explanation
+    });
+
+    // ✅ STEP 4: Update behavior
+    if (transaction.decision !== "block") {
+      await updateBehaviorProfile(req.user, transaction);
+    }
+
+    res.status(201).json({
+      transaction
+    });
+
   } catch (error) {
-    console.log(error);
-
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    console.error("Transaction Error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
-};
+}
 
 exports.getMyTransactions = async (req, res) => {
   try {
@@ -159,6 +100,9 @@ exports.getMyTransactions = async (req, res) => {
         deviceId: txn.deviceId,
       };
     });
+
+
+
 
     return res.status(200).json({
       success: true,

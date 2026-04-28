@@ -1,33 +1,32 @@
-const User = require("../model/User");
-const Transaction = require("../model/Transaction")
+// const User = require("../model/User");
+// const Transaction = require("../model/Transaction")
 
-exports.newUser = async (req, res, next) => {
-  try {
-    const userId = req.user.id;
+// exports.newUser = async (req, res, next) => {
+//   try {
+//     const userId = req.user.id;
 
-    const user = await User.findById(userId);
+//     const user = await User.findById(userId);
 
-    const isNewByTime =
-      (Date.now() - new Date(user.createdAt)) < 24 * 60 * 60 * 1000;
+//     const isNewByTime =
+//       (Date.now() - new Date(user.createdAt)) < 24 * 60 * 60 * 1000;
 
-    const txnCount = await Transaction.countDocuments({
-      sender: userId,
-    });
+//     const txnCount = await Transaction.countDocuments({
+//       sender: userId,
+//     });
 
-    const isNewByTxn = txnCount < 3;
+//     const isNewByTxn = txnCount < 3;
 
 
-    if (isNewByTime || isNewByTxn ) {
-      req.isNewUser = true;
-    } else {
-      req.isNewUser = false;
-    }
+//     if (isNewByTime || isNewByTxn ) {
+//       req.isNewUser = true;
+//     } else {
+//       req.isNewUser = false;
+//     }
 
-    next();
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: "Error in new user check" });
-  }
-};
+//     next();
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).json({ message: "Error in new user check" });
+//   }
+// };
 
-// module.exports = newUser;
