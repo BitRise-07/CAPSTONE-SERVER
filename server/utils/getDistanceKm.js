@@ -1,4 +1,4 @@
-function getDistanceKm(lat1, lon1, lat2, lon2) {
+exports.getDistanceKm = (lat1, lon1, lat2, lon2) => {
   if (!lat1 || !lat2) return 0;
 
   const R = 6371;
@@ -15,4 +15,3 @@ function getDistanceKm(lat1, lon1, lat2, lon2) {
   return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 }
 
-module.exports = getDistanceKm;

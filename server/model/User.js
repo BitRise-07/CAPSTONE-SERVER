@@ -14,7 +14,6 @@ const userSchema = new mongoose.Schema(
       default: "User",
     },
 
-    // 🔥 BEHAVIOR PROFILE (VERY IMPORTANT)
     behavior: {
       avgAmount: { type: Number, default: 0 },
       stdAmount: { type: Number, default: 0 },

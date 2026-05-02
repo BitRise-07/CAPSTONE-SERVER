@@ -1,10 +1,7 @@
-
-
-export function calculateAnomalyScore(features) {
+exports.calculateAnomalyScore = (features) => {
   let score = 0;
 
-  // 🔹 1. Amount deviation (most important)
-  // > 3σ = strong anomaly
+
   if (features.amount_deviation > 3) {
     score += 0.5;
   } else if (features.amount_deviation > 2) {
@@ -13,7 +10,6 @@ export function calculateAnomalyScore(features) {
     score += 0.1;
   }
 
-  // 🔹 2. Geo distance anomaly
   if (features.geo_distance_km > 1000) {
     score += 0.3;
   } else if (features.geo_distance_km > 500) {
@@ -22,7 +18,6 @@ export function calculateAnomalyScore(features) {
     score += 0.1;
   }
 
-  // 🔹 3. Velocity anomaly (too many transactions quickly)
   if (features.velocity_10m > 5) {
     score += 0.3;
   } else if (features.velocity_10m > 3) {
@@ -33,21 +28,17 @@ export function calculateAnomalyScore(features) {
     score += 0.2;
   }
 
-  // 🔹 4. Night transaction (slightly risky)
   if (features.night_transaction) {
     score += 0.05;
   }
 
-  // 🔹 5. Unknown device
   if (!features.known_device) {
     score += 0.1;
   }
 
-  // 🔹 6. Unknown location
   if (!features.known_location) {
     score += 0.1;
   }
 
-  // 🔒 Normalize score (max = 1)
   return Number(Math.min(score, 1).toFixed(4));
 }

@@ -1,31 +1,42 @@
 const mongoose = require("mongoose");
 const Transaction = require("../model/Transaction");
 const crypto = require("crypto");
+const {getCity} =  require("../utils/getCity.js");
 
-import { buildFeatures, updateBehaviorProfile } from "../services/featureService.js";
-import { evaluateRisk } from "../services/riskService.js";
+const { buildFeatures } = require("../services/featureService.js");
+const { evaluateRisk } = require("../services/riskService.js");
+const { updateBehaviorProfile } = require("../services/featureService.js");
 
-export async function addTransaction(req, res) {
+exports.addTransaction = async (req, res) => {
   try {
     const payload = req.body;
 
-    if (!payload.amount || !payload.deviceId || !payload.location?.city) {
+    if (
+      !payload.amount ||
+      !payload.deviceId ||
+      !payload.location?.latitude ||
+      !payload.location?.longitude
+    ) {
       return res.status(400).json({
-        message: "amount, deviceId, and location are required"
+        message: "amount, deviceId, latitude, longitude are required",
       });
     }
 
-    // ✅ STEP 1: Build features
+    const city = await getCity(
+      payload.location.latitude,
+      payload.location.longitude,
+    );
+
+    payload.location.city = city;
+
     const features = await buildFeatures(req.user, payload);
 
-    // ✅ STEP 2: Risk evaluation
     const risk = await evaluateRisk({
       user: req.user,
       features,
-      transactionContext: payload
+      transactionContext: payload,
     });
 
-    // ✅ STEP 3: Save transaction
     const transaction = await Transaction.create({
       user: req.user._id,
       amount: payload.amount,
@@ -40,18 +51,18 @@ export async function addTransaction(req, res) {
       adaptivePolicy: risk.adaptivePolicy,
       decision: risk.decision,
       status: risk.status,
-      explanation: risk.explanation
+      explanation: risk.explanation,
     });
 
-    // ✅ STEP 4: Update behavior
     if (transaction.decision !== "block") {
       await updateBehaviorProfile(req.user, transaction);
     }
 
-    res.status(201).json({
-      transaction
-    });
+    console.log("New Transaction:", transaction);
 
+    res.status(201).json({
+      transaction,
+    });
   } catch (error) {
     console.error("Transaction Error:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -89,9 +100,7 @@ exports.getMyTransactions = async (req, res) => {
           ? `${txn.receiver.firstName} ${txn.receiver.lastName}`
           : `${txn.sender.firstName} ${txn.sender.lastName}`,
 
-        withUserEmail: isSender
-          ? txn.receiver.email
-          : txn.sender.email,
+        withUserEmail: isSender ? txn.receiver.email : txn.sender.email,
 
         sign: isSender ? "-" : "+",
         label: isSender ? "Money Sent" : "Money Received",
@@ -101,9 +110,6 @@ exports.getMyTransactions = async (req, res) => {
       };
     });
 
-
-
-
     return res.status(200).json({
       success: true,
       total,
@@ -111,7 +117,6 @@ exports.getMyTransactions = async (req, res) => {
       totalPages: Math.ceil(total / limit),
       transactions: formattedTransactions,
     });
-
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -123,7 +128,6 @@ exports.getMyTransactions = async (req, res) => {
 
 exports.getAllTransactions = async (req, res) => {
   try {
-
     const {
       page = 1,
       limit = 10,
@@ -158,8 +162,10 @@ exports.getAllTransactions = async (req, res) => {
       const searchLower = search.toLowerCase();
 
       filteredTransactions = transactions.filter((txn) => {
-        const senderName = `${txn.sender.firstName} ${txn.sender.lastName}`.toLowerCase();
-        const receiverName = `${txn.receiver.firstName} ${txn.receiver.lastName}`.toLowerCase();
+        const senderName =
+          `${txn.sender.firstName} ${txn.sender.lastName}`.toLowerCase();
+        const receiverName =
+          `${txn.receiver.firstName} ${txn.receiver.lastName}`.toLowerCase();
 
         return (
           senderName.includes(searchLower) ||
@@ -194,8 +200,8 @@ exports.getAllTransactions = async (req, res) => {
           txn.status === "Success"
             ? "Completed"
             : txn.status === "Fraud"
-            ? "⚠️ Fraud"
-            : "Failed",
+              ? "⚠️ Fraud"
+              : "Failed",
 
         deviceId: txn.deviceId,
         ipAddress: txn.ipAddress,
@@ -218,7 +224,6 @@ exports.getAllTransactions = async (req, res) => {
       totalPages: Math.ceil(total / limit),
       transactions: formattedTransactions,
     });
-
   } catch (error) {
     console.log(error);
     return res.status(500).json({

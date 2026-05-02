@@ -13,6 +13,7 @@ const fileUpload = require("express-fileupload");
 const userRoutes = require("./routes/User");
 const profileRoutes = require("./routes/Profile");
 const transactionRoutes = require("./routes/Transaction");
+const analyticsRoutes = require("./routes/Analytics");
 
 dotenv.config();
 const PORT = process.env.PORT || 4000;
@@ -73,6 +74,7 @@ cloudinaryConnect();
 app.use("/api/v1/auth", userRoutes);
 app.use("/api/v1/profile", profileRoutes);
 app.use("/api/v1/transaction", transactionRoutes);
+app.use("/api/v1/analytics", analyticsRoutes);
 
 app.get("/", (req, res) => {
   return res.json({

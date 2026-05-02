@@ -1,11 +1,11 @@
-import Transaction from "../model/Transaction.js";
-import { getDistanceKm } from "../utils/getDistanceKm.js";
+const Transaction = require("../model/Transaction");
+const { getDistanceKm } = require("../utils/getDistanceKm");
 
-// ✅ BUILD FEATURES (core of fraud system)
-export async function buildFeatures(user, payload) {
+
+exports.buildFeatures = async (user, payload) => {
   const now = new Date();
 
-  // 🔍 Get recent transactions (last 1 hour)
+
   const recent = await Transaction.find({
     user: user._id,
     createdAt: {
@@ -13,23 +13,20 @@ export async function buildFeatures(user, payload) {
     }
   });
 
-  // 🔍 Get last transaction
   const lastTx = await Transaction.findOne({ user: user._id })
     .sort({ createdAt: -1 });
 
-  // 🔥 Velocity features
+
   const velocity10m = recent.filter(
     (tx) => now - tx.createdAt <= 10 * 60 * 1000
   ).length;
 
   const velocity1h = recent.length;
 
-  // 🔥 Time gap
   const timeGapMinutes = lastTx
     ? Math.max((now - lastTx.createdAt) / 60000, 0.1)
     : 1440;
 
-  // 🔥 Distance
   const distance = lastTx
     ? getDistanceKm(
         lastTx.location.latitude,
@@ -39,11 +36,9 @@ export async function buildFeatures(user, payload) {
       )
     : 0;
 
-  // 🔥 Device change
   const deviceChanged =
     lastTx && lastTx.deviceId !== payload.deviceId ? 1 : 0;
 
-  // 🔥 Amount deviation
   const avg = user.behavior?.avgAmount || 0;
   const std = user.behavior?.stdAmount || 1;
 
@@ -51,7 +46,6 @@ export async function buildFeatures(user, payload) {
     ? Math.abs(payload.amount - avg) / std
     : payload.amount / 1000;
 
-  // 🔥 Time of day
   const hour = now.getHours();
 
   return {
@@ -69,8 +63,7 @@ export async function buildFeatures(user, payload) {
   };
 }
 
-// ✅ UPDATE USER BEHAVIOR (VERY IMPORTANT)
-export async function updateBehaviorProfile(user, transaction) {
+exports.updateBehaviorProfile = async (user, transaction) => {
   const count = user.behavior?.transactionCount || 0;
   const nextCount = count + 1;
 

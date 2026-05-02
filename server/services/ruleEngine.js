@@ -1,7 +1,6 @@
-import { timeDiff } from "../utils/calculateTimeDiff.js";
-import { getDistanceKm } from "../utils/getDistanceKm.js";
+const { getDistanceKm } = require("../utils/getDistanceKm");
+const { timeDiff } = require("../utils/calculateTimeDiff");
 
-// ✅ Amount risk
 function amountRiskScore(amount, user) {
   const avg = user.behavior?.avgAmount || 0;
   const max = user.behavior?.maxAmount || avg;
@@ -13,7 +12,6 @@ function amountRiskScore(amount, user) {
   return 0.1;
 }
 
-// ✅ Device risk
 function deviceRiskScore(deviceId, user) {
   if (!deviceId) return 0.8;
 
@@ -24,7 +22,6 @@ function deviceRiskScore(deviceId, user) {
   return 0.7;
 }
 
-// ✅ Velocity risk (geo + time)
 function velocityRiskScore(user, location, currentTime) {
   const lastTime = user.behavior?.lastTransactionAt;
   const lastLat = user.behavior?.lastLatitude;
@@ -80,8 +77,7 @@ function frequentTransactionScore(features) {
   return score;
 }
 
-// ✅ FINAL RULE SCORE
-export function finalRuleScore({ user, features, transactionContext }) {
+exports.finalRuleScore = ({ user, features, transactionContext }) => {
   const now = new Date();
 
   const amountScore = amountRiskScore(transactionContext.amount, user);

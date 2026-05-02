@@ -1,5 +1,5 @@
-import axios from "axios";
-import Transaction from "../model/Transaction";
+const Transaction = require("../model/Transaction");
+const axios = require("axios");
 
 // ✅ Fallback ML model (used if ML service is down)
 const fallbackModel = {
@@ -23,7 +23,7 @@ const fallbackModel = {
   ]
 };
 
-export async function dashboardSummary(req, res) {
+exports.dashboardSummary = async (req, res) => {
   try {
     // ✅ Decide who can see what
     // Admin → all transactions
