@@ -1,8 +1,24 @@
-const axios = require("axios");
-const Transaction = require("../model/Transaction");
-const { calculateAnomalyScore } = require("./calculateAnomalyScore.js");
-const {finalRuleScore} = require("./ruleEngine.js");  
-const mlBaseUrl = process.env.ML_SERVICE_URL || "http://localhost:8000";
+const { calculateAnomalyScore } = require("./calculateAnomalyScore");
+const {
+  evaluateRules,
+  applyHardRules,
+  calculateRuleScore
+} = require("./ruleEngine");
+
+function adaptivePolicy(user) {
+  const tx = user.behavior?.transactionCount || 0;
+
+  let confidence = 0.2;
+  if (tx > 50) confidence = 1;
+  else if (tx > 20) confidence = 0.8;
+  else if (tx > 5) confidence = 0.5;
+
+  return {
+    otpThreshold: 0.6 - confidence * 0.2,
+    blockThreshold: 0.8 - confidence * 0.2,
+    profileConfidence: confidence
+  };
+}
 
 function decisionFromRisk(risk, policy) {
   if (risk >= policy.blockThreshold) return { decision: "block", status: "blocked" };
@@ -10,50 +26,48 @@ function decisionFromRisk(risk, policy) {
   return { decision: "allow", status: "approved" };
 }
 
-function adaptivePolicy(user) {
-  const history = user.behavior?.transactionCount || 0;
-  const confidence = Math.min(1, history / 20);
-
-  return {
-    otpThreshold: 0.5 - confidence * 0.1,
-    blockThreshold: 0.75 - confidence * 0.1,
-    profileConfidence: confidence
-  };
-}
-
 exports.evaluateRisk = async ({ user, features, transactionContext }) => {
-  // ML fallback
-  //let ml = 0.2;
+
+  const rules = evaluateRules({ user, features, transactionContext });
+
+  // 🚨 HARD RULES
+  const hard = applyHardRules(rules, user, features, transactionContext);
+
+  if (hard) {
+    return {
+      decision: hard.decision,
+      status: hard.decision === "block" ? "blocked" : "pending_otp",
+      scores: null,
+      explanation: {
+        type: "hard_rule",
+        message: hard.reason,
+        rules
+      }
+    };
+  }
+
+  // 🔽 SCORING
+  const ruleScore = calculateRuleScore(rules);
   const anomaly = calculateAnomalyScore(features);
 
-  const rule = finalRuleScore({
-    user,
-    features,
-    transactionContext
-  });
-
-  
-  const risk =
- //   0.4 * ml +
-    0.3 * rule +
-    0.3 * anomaly;
-
-  const finalRisk = Number(Math.min(Math.max(risk, 0), 1).toFixed(4));
+  const risk = Number(Math.min(1, 0.5 * ruleScore + 0.5 * anomaly).toFixed(4));
 
   const policy = adaptivePolicy(user);
+  const decision = decisionFromRisk(risk, policy);
 
   return {
     scores: {
-   //   ml,
+      rule: ruleScore,
       anomaly,
-      rule,
-      risk: finalRisk
+      risk,
+      note: "Score used only when no critical rule triggered"
     },
     adaptivePolicy: policy,
-    ...decisionFromRisk(finalRisk, policy),
+    ...decision,
     explanation: {
-      reason: "Hybrid risk (ML + Rule-based)",
-      contributions: []
+      type: "score_based",
+      rules,
+      message: "Decision based on rule + anomaly (no ML)"
     }
   };
-}
+};
