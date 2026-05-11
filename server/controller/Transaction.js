@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Transaction = require("../model/Transaction");
 const crypto = require("crypto");
-const {getCity} =  require("../utils/getCity.js");
+const { getCity } = require("../utils/getCity.js");
 
 const { buildFeatures } = require("../services/featureService.js");
 const { evaluateRisk } = require("../services/riskService.js");
@@ -67,61 +67,26 @@ exports.addTransaction = async (req, res) => {
     console.error("Transaction Error:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
-}
+};
 
 exports.getMyTransactions = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { page = 1, limit = 10 } = req.query;
 
     const transactions = await Transaction.find({
-      $or: [{ sender: userId }, { receiver: userId }],
-    })
-      .populate("sender", "firstName lastName email")
-      .populate("receiver", "firstName lastName email")
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(Number(limit));
-
-    const total = await Transaction.countDocuments({
-      $or: [{ sender: userId }, { receiver: userId }],
-    });
-
-    const formattedTransactions = transactions.map((txn) => {
-      const isSender = txn.sender._id.toString() === userId.toString();
-
-      return {
-        id: txn._id,
-        type: isSender ? "DEBIT" : "CREDIT",
-        amount: txn.amount,
-        status: txn.status,
-
-        withUser: isSender
-          ? `${txn.receiver.firstName} ${txn.receiver.lastName}`
-          : `${txn.sender.firstName} ${txn.sender.lastName}`,
-
-        withUserEmail: isSender ? txn.receiver.email : txn.sender.email,
-
-        sign: isSender ? "-" : "+",
-        label: isSender ? "Money Sent" : "Money Received",
-        time: txn.createdAt,
-        location: txn.location,
-        deviceId: txn.deviceId,
-      };
-    });
+      user: userId,
+    }).sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
-      total,
-      page: Number(page),
-      totalPages: Math.ceil(total / limit),
-      transactions: formattedTransactions,
+      transactions,
     });
   } catch (error) {
     console.log(error);
+
     return res.status(500).json({
       success: false,
-      message: "Failed to fetch your transactions",
+      message: "Failed to fetch transactions",
     });
   }
 };
