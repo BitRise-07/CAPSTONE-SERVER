@@ -10,6 +10,15 @@ const OTPSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  purpose: {
+    type: String,
+    enum: ["signup", "transaction"],
+    default: "signup",
+  },
+  transaction: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Transaction",
+  },
   createdAt: {
     type: Date,
     default: Date.now,

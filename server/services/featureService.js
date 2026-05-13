@@ -5,14 +5,19 @@ const { getDistanceKm } = require("../utils/getDistanceKm");
 exports.buildFeatures = async (user, payload) => {
   const now = new Date();
 
-  const recent = await Transaction.find({
+  const baselineFilter = {
     user: user._id,
+    status: "approved",
+  };
+
+  const recent = await Transaction.find({
+    ...baselineFilter,
     createdAt: {
       $gte: new Date(now.getTime() - 60 * 60 * 1000)
     }
   });
 
-  const lastTx = await Transaction.findOne({ user: user._id })
+  const lastTx = await Transaction.findOne(baselineFilter)
     .sort({ createdAt: -1 });
 
   // ✅ Velocity counts (NO artificial +1)

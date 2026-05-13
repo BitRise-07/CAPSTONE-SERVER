@@ -19,7 +19,7 @@ const fallbackModel = {
     { fpr: 0.01, tpr: 0.42 },
     { fpr: 0.04, tpr: 0.68 },
     { fpr: 0.12, tpr: 0.82 },
-    { fpr: 0, tpr: 1 }
+    { fpr: 1, tpr: 1 }
   ]
 };
 
