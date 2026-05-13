@@ -81,6 +81,7 @@ def root():
                 "model_info": "GET /model/info",
                 "predict": "POST /predict",
                 "batch_predict": "POST /predict/batch",
+                "metrics": "GET /metrics",
             },
         }
     )
@@ -105,6 +106,35 @@ def model_info():
             "dataset": model_bundle.get("dataset"),
             "feature_columns": model_bundle.get("feature_columns"),
             "metrics": model_bundle.get("metrics"),
+        }
+    )
+
+
+@app.get("/metrics")
+def metrics():
+    if model_bundle is None:
+        return error_response(
+            "Model artifact not found. Run 'python train.py' first.",
+            status_code=503,
+        )
+
+    metrics_payload = model_bundle.get("metrics", {})
+    report = metrics_payload.get("classification_report", {})
+    weighted = report.get("weighted avg", {})
+    fraud_class = report.get("1", {})
+
+    return jsonify(
+        {
+            "accuracy": report.get("accuracy"),
+            "precision": fraud_class.get("precision") or weighted.get("precision"),
+            "recall": fraud_class.get("recall") or weighted.get("recall"),
+            "f1": fraud_class.get("f1-score") or weighted.get("f1-score"),
+            "roc_auc": metrics_payload.get("roc_auc"),
+            "confusion_matrix": metrics_payload.get("confusion_matrix"),
+            "roc_curve": metrics_payload.get("roc_curve", []),
+            "test_rows": metrics_payload.get("test_rows"),
+            "fraud_rate": metrics_payload.get("fraud_rate"),
+            "threshold": model_bundle.get("threshold"),
         }
     )
 

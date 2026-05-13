@@ -114,7 +114,7 @@ exports.dashboardSummary = async (req, res) => {
     try {
       // WHY: fetch real-time model performance
       const { data } = await axios.get(
-        `${process.env.ML_SERVICE_URL || "http://localhost:8000"}/metrics`,
+        `${process.env.ML_SERVICE_URL || "http://localhost:5000"}/metrics`,
         { timeout: 2500 } // avoid hanging request
       );
 

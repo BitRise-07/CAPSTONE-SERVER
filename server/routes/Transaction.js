@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { auth, isUser } = require("../middlewares/auth");
+const { auth, isUser, isAdmin } = require("../middlewares/auth");
 
 const {
   addTransaction,       
@@ -11,6 +11,6 @@ const {
 
 router.post("/create-transaction", auth, isUser, addTransaction);
 router.get("/get-transactions", auth, isUser, getMyTransactions);
-router.get("/get-all-transactions", auth, getAllTransactions);
+router.get("/get-all-transactions", auth, isAdmin, getAllTransactions);
 
 module.exports = router;

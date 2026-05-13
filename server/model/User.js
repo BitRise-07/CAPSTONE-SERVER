@@ -14,6 +14,11 @@ const userSchema = new mongoose.Schema(
       default: "User",
     },
 
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
+
     behavior: {
       avgAmount: { type: Number, default: 0 },
       stdAmount: { type: Number, default: 0 },

@@ -97,6 +97,7 @@ exports.getAllTransactions = async (req, res) => {
       page = 1,
       limit = 10,
       status,
+      decision,
       minAmount,
       maxAmount,
       search,
@@ -108,6 +109,10 @@ exports.getAllTransactions = async (req, res) => {
       filter.status = status;
     }
 
+    if (decision) {
+      filter.decision = decision;
+    }
+
     if (minAmount || maxAmount) {
       filter.amount = {};
       if (minAmount) filter.amount.$gte = Number(minAmount);
@@ -115,8 +120,7 @@ exports.getAllTransactions = async (req, res) => {
     }
 
     const transactions = await Transaction.find(filter)
-      .populate("sender", "firstName lastName email")
-      .populate("receiver", "firstName lastName email")
+      .populate("user", "firstName lastName email accountType isBlocked image")
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(Number(limit));
@@ -127,16 +131,15 @@ exports.getAllTransactions = async (req, res) => {
       const searchLower = search.toLowerCase();
 
       filteredTransactions = transactions.filter((txn) => {
-        const senderName =
-          `${txn.sender.firstName} ${txn.sender.lastName}`.toLowerCase();
-        const receiverName =
-          `${txn.receiver.firstName} ${txn.receiver.lastName}`.toLowerCase();
+        const userName =
+          `${txn.user?.firstName || ""} ${txn.user?.lastName || ""}`.toLowerCase();
+        const userEmail = txn.user?.email?.toLowerCase() || "";
 
         return (
-          senderName.includes(searchLower) ||
-          receiverName.includes(searchLower) ||
-          txn.sender.email.toLowerCase().includes(searchLower) ||
-          txn.receiver.email.toLowerCase().includes(searchLower)
+          userName.includes(searchLower) ||
+          userEmail.includes(searchLower) ||
+          txn.merchant?.toLowerCase().includes(searchLower) ||
+          txn.location?.city?.toLowerCase().includes(searchLower)
         );
       });
     }
@@ -145,38 +148,39 @@ exports.getAllTransactions = async (req, res) => {
       return {
         id: txn._id,
 
-        sender: {
-          id: txn.sender._id,
-          name: `${txn.sender.firstName} ${txn.sender.lastName}`,
-          email: txn.sender.email,
-        },
-
-        receiver: {
-          id: txn.receiver._id,
-          name: `${txn.receiver.firstName} ${txn.receiver.lastName}`,
-          email: txn.receiver.email,
+        user: {
+          id: txn.user?._id,
+          name: `${txn.user?.firstName || ""} ${txn.user?.lastName || ""}`.trim(),
+          email: txn.user?.email,
+          image: txn.user?.image,
+          isBlocked: Boolean(txn.user?.isBlocked),
         },
 
         amount: txn.amount,
+        merchant: txn.merchant,
+        category: txn.category,
+        channel: txn.channel,
 
         status: txn.status,
+        decision: txn.decision,
+        scores: txn.scores,
+        reason: txn.explanation?.reason,
 
         statusLabel:
-          txn.status === "Success"
+          txn.status === "approved"
             ? "Completed"
-            : txn.status === "Fraud"
-              ? "⚠️ Fraud"
-              : "Failed",
+            : txn.status === "blocked"
+              ? "Blocked"
+              : "Pending OTP",
 
         deviceId: txn.deviceId,
-        ipAddress: txn.ipAddress,
 
         location: txn.location,
 
         time: txn.createdAt,
         formattedTime: new Date(txn.createdAt).toLocaleString(),
 
-        isSuspicious: txn.status === "Fraud",
+        isSuspicious: txn.decision === "block" || txn.status === "blocked",
       };
     });
 

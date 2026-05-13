@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
+from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score, roc_curve
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
@@ -213,6 +213,7 @@ def train():
     probabilities = pipeline.predict_proba(X_test)[:, 1]
     threshold = 0.5
     predictions = (probabilities >= threshold).astype(int)
+    fpr, tpr, roc_thresholds = roc_curve(y_test, probabilities)
 
     metrics = {
         "roc_auc": float(roc_auc_score(y_test, probabilities)),
@@ -223,6 +224,16 @@ def train():
             zero_division=0,
         ),
         "confusion_matrix": confusion_matrix(y_test, predictions).tolist(),
+        "roc_curve": [
+            {
+                "fpr": float(false_positive_rate),
+                "tpr": float(true_positive_rate),
+                "threshold": float(curve_threshold),
+            }
+            for false_positive_rate, true_positive_rate, curve_threshold in zip(
+                fpr, tpr, roc_thresholds
+            )
+        ],
         "test_rows": int(len(X_test)),
         "fraud_rate": float(y.mean()),
     }

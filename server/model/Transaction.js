@@ -10,6 +10,16 @@ const contributionSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const ruleSchema = new mongoose.Schema(
+  {
+    name: String,
+    score: Number,
+    level: String,
+    reason: String,
+  },
+  { _id: false }
+);
+
 const transactionSchema = new mongoose.Schema(
   {
     user: {
@@ -93,7 +103,17 @@ const transactionSchema = new mongoose.Schema(
     },
 
     explanation: {
+      type: {
+        type: String,
+        default: "score_based",
+      },
+      message: String,
       reason: String,
+      mlMessage: String,
+      rules: {
+        type: [ruleSchema],
+        default: [],
+      },
       contributions: {
         type: [contributionSchema],
         default: [],
